@@ -1,0 +1,359 @@
+\RequirePackage{expl3,xparse}
+\ProvidesExplPackage{chs-msc-thesis}{1970/01/01}{0.0}
+	{Chalmers University of Technology thesis macros (unofficial)}
+
+%% Required packages
+\RequirePackage{etoolbox} % Very useful
+\RequirePackage{graphicx,eso-pic} % For cover page background
+\RequirePackage{ragged2e} % For FlushLeft on various pages
+
+%% Warning/error messages
+\msg_new:nnnn{chs-msc-thesis}{missing-metadata}{Metadata~field~`#1'~is~missing!}
+	{Please~provide~the~appropriate~value~using~`\token_to_str:N\SetupMetadata'.}
+\msg_new:nnn{chs-msc-thesis}{incorrect-usage}{Incorrect~usage~of~`\token_to_str:N#1'.}
+
+%% Useful things
+\cs_new:Npn\__maybe_usekomafont:n#1{
+	\cs_if_exist_use:NT\usekomafont{{#1}}
+}
+\cs_new:Npn\__maybe_textssc:n#1{
+	\cs_if_exist_use:NF\textssc{\textsc}{#1}
+}
+\cs_new:Npn\__maybe_textsw:n#1{
+	\cs_if_exist_use:NF\textsw{\textit}{#1}
+}
+
+%% Setting metadata
+\keys_define:nn{chs-msc-thesis}{
+	title      .tl_gset:N = \g__chsmscthesis_title_tl,
+	subtitle   .tl_gset:N = \g__chsmscthesis_subtitle_tl,
+	author     .tl_gset:N = \g__chsmscthesis_author_tl,
+	year       .tl_gset:N = \g__chsmscthesis_year_tl,
+	publisher  .tl_gset:N = \g__chsmscthesis_publisher_tl,
+	subject    .tl_gset:N = \g__chsmscthesis_subject_tl,
+	department .tl_gset:N = \g__chsmscthesis_department_tl,
+	series     .tl_gset:N = \g__chsmscthesis_series_tl,
+	abstract   .tl_gset:N = \g__chsmscthesis_abstract_tl,
+	cover-image .tl_gset:c = {g__chsmscthesis_cover-image_tl},
+	cover-caption .tl_gset:c = {g__chsmscthesis_cover-caption_tl},
+	keywords   .clist_gset:N = \g__chsmscthesis_keywords_clist,
+}
+\DeclareDocumentCommand\SetupMetadata{m}{
+	\keys_set:nn{chs-msc-thesis}{#1}
+	\__chsmscthesis_check_required_fields:
+	\__chsmscthesis_warn_optional_fields:
+}
+\cs_new:Npn\__chsmscthesis_check_required_field:n#1{
+	\str_if_eq:nnTF{keywords}{#1}{
+		\clist_if_empty:NT\g__chsmscthesis_keywords_clist{
+			\msg_error:nnn{chs-msc-thesis}{missing-metadata}{keywords}
+		}
+	}{
+		\clist_if_in:nnTF{title,author,year,subject,department,abstract}{#1}{
+			\tl_if_empty:cT{g__chsmscthesis_#1_tl}{
+				\msg_error:nnn{chs-msc-thesis}{missing-metadata}{#1}
+			}
+		}{
+			\msg_info:nnn{chs-msc-thesis}{incorrect-usage}
+				{\__chsmscthesis_check_required_field:n}
+		}
+	}
+}
+\cs_new:Npn\__chsmscthesis_check_required_fields:{
+	\clist_map_function:nN
+		{keywords,title,author,year,subject,department,abstract}
+		\__chsmscthesis_check_required_field:n
+}
+\cs_new:Npn\__chsmscthesis_warn_optional_field:n#1{
+	\clist_if_in:nnTF{subtitle,publisher,series,cover-image,cover-caption}{#1}{
+		\tl_if_empty:cTF{g__chsmscthesis_#1_tl}{
+			\msg_warning:nnn{chs-msc-thesis}{missing-metadata}{#1}
+		}{
+			\str_if_eq:nnT{cover-image}{#1}{
+				\tl_if_empty:cT{g__chsmscthesis_cover-caption_tl}{
+					\msg_error:nnn{chs-msc-thesis}{missing-metadata}
+						{cover-caption}
+				}
+			}
+			\str_if_eq:nnT{cover-caption}{#1}{
+				\tl_if_empty:cT{g__chsmscthesis_cover-image_tl}{
+					\msg_error:nnn{chs-msc-thesis}{missing-metadata}
+						{cover-image}
+				}
+			}
+		}
+	}{
+		\msg_info:nnn{chs-msc-thesis}{incorrect-usage}
+			{\__chsmscthesis_warn_optional_field:n}
+	}
+}
+\cs_new:Npn\__chsmscthesis_warn_optional_fields:{
+	\clist_map_function:nN
+		{publisher,series,cover-image,cover-caption}
+		\__chsmscthesis_warn_optional_field:n
+}
+
+%% Cover page macros
+\cs_set:Npn\__chsmscthesis_background_image:n#1{
+	\AddToShipoutPictureBG*{
+		\put(0,\LenToUnit{\voffset}){
+			\mbox{\includegraphics{#1}}
+		}
+	}
+}
+\cs_generate_variant:Nn\__chsmscthesis_background_image:n{x}
+\keys_define:nn{chs-msc-thesis/coverpage}{
+	gu-logo .bool_gset:N = \g__chsmscthesis_gu_logo_bool,
+	gu-logo .initial:n = {false},
+	gu-logo .default:n = {true}
+}
+\DeclareDocumentCommand\coverpage{o}{
+	\__chsmscthesis_check_required_fields:
+	\keys_set:nn{chs-msc-thesis/coverpage}{}
+	\IfNoValueF{#1}{
+		\keys_set:nn{chs-msc-thesis/coverpage}{#1}
+	}
+	\cleardoublepage
+	\thispagestyle{empty}
+	\__chsmscthesis_background_image:x{
+		\bool_if:NTF\g__chsmscthesis_gu_logo_bool
+			{frontpage-gu.pdf}
+			{frontpage.pdf}
+	}
+	\addtolength{\voffset}{2cm}
+	\tl_if_empty:cTF{g__chsmscthesis_cover-image_tl}{
+		\null
+	}{
+		\noindent
+		\tl_use:c{g__chsmscthesis_cover-image_tl}
+	}
+	\vfill
+	\begin{FlushLeft}
+		\noindent
+		{
+			\__maybe_usekomafont:n{title}
+			\Huge
+			\tl_use:N\g__chsmscthesis_title_tl
+		}\\[.5\baselineskip]
+		\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
+			{
+				\__maybe_usekomafont:n{subtitle}
+				\LARGE
+				\tl_use:N\g__chsmscthesis_subtitle_tl
+			}\\[\baselineskip]
+		}
+		{
+			\__maybe_usekomafont:n{subject}
+			\Large
+			\emph{Master's~Thesis~in~\tl_use:N\g__chsmscthesis_subject_tl}
+		}\\[1.6\baselineskip]
+		{
+			\huge
+			\tl_use:N\g__chsmscthesis_author_tl
+		}\\[1.6\baselineskip]
+		{
+			\Large
+			\tl_use:N\g__chsmscthesis_department_tl\\
+		 	\textsc{Chalmers~University~of~Technology}\\
+	     	Gothenburg,~Sweden~\tl_use:N\g__chsmscthesis_year_tl\\
+	     	\tl_if_empty:NF\g__chsmscthesis_series_tl{
+	     		Master's~Thesis~\tl_use:N\g__chsmscthesis_series_tl\\
+	     	}
+	     }
+	\end{FlushLeft}
+}
+
+%% Title page macros
+\cs_undefine:N\titlepage
+\cs_undefine:N\endtitlepage
+\DeclareDocumentCommand\titlepage{}{
+	\__chsmscthesis_check_required_fields:
+	\cleardoublepage
+	\thispagestyle{empty}
+	\begingroup
+		\Centering
+		\tl_if_empty:NTF\g__chsmscthesis_series_tl{
+			\null
+			\vspace*{4cm}
+		}{
+			\__maybe_textssc:n{
+				\small REPORT~NO.\ \tl_use:N\g__chsmscthesis_series_tl
+			}\\[4cm]
+		}
+		{
+			\huge
+			\tl_use:N\g__chsmscthesis_title_tl
+		}\\[\baselineskip]
+		\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
+			{
+				\tl_use:N\g__chsmscthesis_subtitle_tl
+			}\\[\baselineskip]
+		}
+		\__maybe_textssc:n{
+			\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+		}
+		\vfill
+		{
+			\tl_use:N\g__chsmscthesis_department_tl\\
+			\textsc{Chalmers~University~of~Technology}\\
+			Gothenburg,~Sweden~\tl_use:N\g__chsmscthesis_year_tl\\
+		}
+	\endgroup
+}
+
+%% Imprint page
+\DeclareDocumentCommand\imprintpage{}{
+	\__chsmscthesis_check_required_fields:
+	\cleardoublepage
+	\thispagestyle{empty}
+	\null
+	\vspace{4cm}
+	\begin{FlushLeft}
+		\begingroup
+			\tl_use:N\g__chsmscthesis_title_tl\\
+			\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
+				\tl_use:N\g__chsmscthesis_subtitle_tl\\
+			}
+			\__maybe_textssc:n{
+				\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+			}\\[\baselineskip]
+			{
+			 	\textcopyright{}~
+			 	\__maybe_textssc:n{
+			 		\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+			 	},~
+			 	\tl_use:N\g__chsmscthesis_year_tl.
+			}\\[\baselineskip]
+			\tl_if_empty:NF\g__chsmscthesis_series_tl{
+				Technical~report~no~
+				\tl_use:N\g__chsmscthesis_series_tl\\
+			}
+			\tl_use:N\g__chsmscthesis_department_tl\\
+			Chalmers~University~of~Technology\\
+			SE--412\,96~Göteborg\\
+			Sweden\\
+			Telephone~{+46\,(0)31--772\,1000}\\
+		\endgroup
+		\vfill
+		\tl_if_empty:cF{g__chsmscthesis_cover-caption_tl}{
+			Cover:\\
+			\tl_use:c{g__chsmscthesis_cover-caption_tl}\\[\baselineskip]
+		}
+		\tl_if_empty:NTF\g__chsmscthesis_publisher_tl{
+			\tl_use:N\g__chsmscthesis_department_tl\\
+		}{
+			\tl_use:N\g__chsmscthesis_publisher_tl\\
+		}
+		Gothenburg,~Sweden~\tl_use:N\g__chsmscthesis_year_tl
+	\end{FlushLeft}
+}
+
+%% Abstract page
+\DeclareDocumentCommand\abstractpage{}{
+	\__chsmscthesis_check_required_fields:
+	\cleardoublepage
+	\thispagestyle{empty}
+	\begin{FlushLeft}
+		{
+			\tl_use:N\g__chsmscthesis_title_tl\\
+			\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
+				\tl_use:N\g__chsmscthesis_subtitle_tl\\
+			}
+		 	\__maybe_textssc:n{
+		 		\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+		 	}\\
+		 	\tl_use:N\g__chsmscthesis_department_tl\\
+		 	Chalmers~University~of~Technology\\
+		 }
+	\end{FlushLeft}
+	\vspace{2\bigskipamount}
+	\minisec{\cs_if_exist_use:NF\abstractname{Summary}}
+	\tl_use:N\g__chsmscthesis_abstract_tl
+	\vfill
+	\noindent
+	Keywords:~\clist_use:Nn\g__chsmscthesis_keywords_clist{,~}
+}
+
+%% PDF metadata
+\DeclareDocumentCommand\pdfmetadata{}{
+	\cs_if_exist_use:NT\hypersetup{{
+		pdfinfo = {
+			Title = {\tl_use:N\g__chsmscthesis_title_tl},
+			Author = {\tl_use:N\g__chsmscthesis_author_tl},
+			Subject = {\tl_use:N\g__chsmscthesis_subject_tl},
+			Keywords = {\clist_use:Nn\g__chsmscthesis_keywords_clist{,~}}
+		}
+	}}
+}
+
+%% Formatting
+% Header/footer
+\RequirePackage{scrpage2}
+\gappto\frontmatter{\pagestyle{scrplain}}
+\gappto\mainmatter{\pagestyle{scrheadings}}
+\renewcommand\chaptermark[1]
+	{\markleft{\thechapter{}.\;\MakeMarkcase{#1}}}
+\renewcommand\sectionmark[1]
+	{\markright{\MakeMarkcase{#1}}}
+% Table of contents
+\PassOptionsToPackage{tocfullflat}{tocstyle}
+\RequirePackage{tocstyle}
+\usetocstyle{nopagecolumn}
+% Section titles
+\PassOptionsToPackage{explicit}{titlesec}
+\RequirePackage{titlesec}
+\cs_if_exist_use:NT\KOMAoptions{{
+	numbers=noenddot,
+	headings=small
+}}
+\cs_gset_nopar:Npn\thechapter{\Roman{chapter}\autodot}
+\cs_gset_nopar:Npn\thesection{\arabic{section}\autodot}
+\cs_if_exist_use:NT\addtokomafont{{chapter}{\huge}}
+\cs_if_exist_use:NT\addtokomafont{{subsection}{\large}}
+\titleformat{\chapter}[display]{
+	\chapterheadstartvskip
+	\Centering
+	\__maybe_usekomafont:n{disposition}
+	\__maybe_usekomafont:n{chapter}
+}{\Centering\Huge\thechapter}{.5\baselineskip}{#1}[\chapterheadendvskip]
+\titleformat{\section}[hang]{
+	\__maybe_usekomafont:n{section}
+}{\llap{\thesection\hspace{1ex}}}{0pt}{\textsc{\MakeLowercase{#1}}}[\vspace{-.5\baselineskip}]
+\titleformat{\subsection}[hang]{
+	\__maybe_usekomafont:n{subsection}
+}{\llap{\thesubsection\hspace{1ex}}}{0pt}{\textsl{\textsc{\MakeLowercase{#1}}}}[\vspace{-.5\baselineskip}]
+\titleformat{\subsubsection}[hang]{
+	\__maybe_usekomafont:n{subsubsection}
+}{\llap{\thesubsubsection\hspace{1ex}}}{0pt}{\textit{#1}}[\vspace{-.5\baselineskip}]
+\titleformat{\paragraph}[runin]{
+	\__maybe_usekomafont:n{paragraph}
+}{\theparagraph}{1ex}{\textsc{\MakeLowercase{#1}}}[]
+\titleformat{\subparagraph}[runin]{
+	\__maybe_usekomafont:n{subparagraph}
+}{\thesubparagraph}{1ex}{\textsl{\textsc{\MakeLowercase{#1}}}}[]
+% Figure captions
+\RequirePackage{chngcntr}
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+%\cs_gset_nopar:Npn\thefigure{\arabic{figure}}
+%\cs_gset_nopar:Npn\thetable{\arabic{table}}
+\cs_if_exist_use:NT\addtokomafont{{caption}{\itshape}}
+\cs_if_exist_use:NT\addtokomafont{{captionlabel}{\bfseries}}
+\cs_if_exist_use:NT\KOMAoptions{{
+	captions=belowfigure,
+	captions=abovetable,
+}}
+\setcapindent{0em}
+% Footnotes
+\cs_if_exist_use:NT\KOMAoptions{{
+	footnotes=multiple
+}}
+\PassOptionsToPackage{perpage,para,bottom,%
+					  stable,multiple,norule}{footmisc}
+\RequirePackage{footmisc}
+% Other
+\let\raggedsection\RaggedRight
+\AtEndPreamble{\cs_if_exist_use:NT\KOMAoptions{{DIV=current}}}
+% French spacing and protrusion
+\RequirePackage{microtype}
+\frenchspacing
