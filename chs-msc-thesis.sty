@@ -296,9 +296,10 @@
 \renewcommand\sectionmark[1]
 	{\markright{\MakeMarkcase{#1}}}
 % Table of contents
-\PassOptionsToPackage{tocfullflat}{tocstyle}
+\PassOptionsToPackage{tocgraduated}{tocstyle}
 \RequirePackage{tocstyle}
 \usetocstyle{nopagecolumn}
+\settocstylefeature[2]{entryhook}{\itshape}
 % Section titles
 \PassOptionsToPackage{explicit}{titlesec}
 \RequirePackage{titlesec}
