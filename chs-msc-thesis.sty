@@ -204,7 +204,7 @@
 %% Imprint page
 \DeclareDocumentCommand\imprintpage{}{
 	\__chsmscthesis_check_required_fields:
-	\cleardoublepage
+	\clearpage
 	\thispagestyle{empty}
 	\null
 	\vspace{4cm}
@@ -284,6 +284,15 @@
 			Keywords = {\clist_use:Nn\g__chsmscthesis_keywords_clist{,~}}
 		}
 	}}
+}
+
+%% All front matter at once
+\DeclareDocumentCommand\makefrontmatter{o}{
+	\pdfmetadata
+	\coverpage[#1]
+	\titlepage
+	\imprintpage
+	\abstractpage
 }
 
 %% Formatting
