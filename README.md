@@ -4,11 +4,11 @@ This is an unofficial package that defines macros for the layout of the preamble
 
 Although master's theses are to be written in english, the class supports `babel` and provides english and swedish translations of the preamble. The package should work with any document class and font stack, as well as with other packages, but it is tailored for the `scrbook` KOMA-script document class along with Minion Pro and Cronos Pro fonts.
 
-The actual package, `chs-msc-thesis.sty`, is available under the MIT license (see `LICENSE`). The sample file `chs-msc-thesis-test.tex` is in the public domain. The logotypes in the two PDF files `chs-msc-frontpage.pdf` and `chs-msc-frontpage-gu.pdf` is trademarked by their respective owners (Chalmers University of Technology and Gothenburg University), so take appropriate measures before using them. They have been reverse-engineered from material publically available from Studentportalen at Chalmers (see links at the end of this document).
+The actual package, consisting of the files `chs-msc-thesis.sty` and `chs-msc-thesis-logos.sty` (excepting the trademarked logo defined in the latter), is available under the MIT license (see `LICENSE`). The sample file `chs-msc-thesis-test.tex` is in the public domain. The logotypes in the two PDF files `chs-msc-avancez-logo.pdf` and `chs-msc-gu-logo.pdf` is trademarked by their respective owners (Chalmers University of Technology and Gothenburg University), so take appropriate measures before using them. They have been reverse-engineered from material publically available from Studentportalen at Chalmers (see links at the end of this document).
 
 ## Usage
 
-Install the package by putting the `chs-msc-frontpage.pdf`, `chs-msc-frontpage-gu.pdf` and `chs-msc-thesis.sty` files either in your `TEXMFHOME` directory (recommended) or the same directory as your thesis.
+Install the package by putting the `chs-msc-avancez-logo.pdf`, `chs-msc-gu-logo.pdf`, `chs-msc-thesis-logos.sty` and `chs-msc-thesis.sty` files either in your `TEXMFHOME` directory (recommended) or the same directory as your thesis.
 
 First, load the package (`chs-msc-thesis`).
 Then, issue the `\SetupMetadata` macro:

@@ -1,11 +1,12 @@
 \RequirePackage{expl3,xparse}
-\ProvidesExplPackage{chs-msc-thesis}{1970/01/01}{0.0}
+\ProvidesExplPackage{chs-msc-thesis}{2013/11/12}{r1}
 	{Chalmers University of Technology thesis macros (unofficial)}
 
 %% Required packages
 \RequirePackage{etoolbox} % Very useful
-\RequirePackage{graphicx,eso-pic} % For cover page background
+\RequirePackage{graphicx,tikz} % For cover page background
 \RequirePackage{ragged2e} % For FlushLeft on various pages
+\RequirePackage{chs-msc-thesis-logos} % Logotypes
 
 %% Warning/error messages
 \msg_new:nnnn{chs-msc-thesis}{missing-metadata}{Metadata~field~`#1'~is~missing!}
@@ -126,14 +127,6 @@
 }
 
 %% Cover page macros
-\cs_set:Npn\__chsmscthesis_background_image:n#1{
-	\AddToShipoutPictureBG*{
-		\put(0,\LenToUnit{\voffset}){
-			\mbox{\includegraphics{#1}}
-		}
-	}
-}
-\cs_generate_variant:Nn\__chsmscthesis_background_image:n{x}
 \keys_define:nn{chs-msc-thesis/coverpage}{
 	gu-logo .bool_gset:N = \g__chsmscthesis_gu_logo_bool,
 	gu-logo .initial:n = {false},
@@ -147,52 +140,64 @@
 	}
 	\cleardoublepage
 	\thispagestyle{empty}
-	\__chsmscthesis_background_image:x{
-		\bool_if:NTF\g__chsmscthesis_gu_logo_bool
-			{chs-msc-frontpage-gu.pdf}
-			{chs-msc-frontpage.pdf}
-	}
-	\addtolength{\voffset}{2cm}
-	\tl_if_empty:cTF{g__chsmscthesis_cover-image_tl}{
-		\null
-	}{
-		\noindent
-		\tl_use:c{g__chsmscthesis_cover-image_tl}
-	}
-	\vfill
-	\begin{FlushLeft}
-		\noindent
-		{
-			\__maybe_usekomafont:n{title}
-			\Huge
-			\tl_use:N\g__chsmscthesis_title_tl
-		}\\[.5\baselineskip]
-		\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
-			{
-				\__maybe_usekomafont:n{subtitle}
-				\LARGE
-				\tl_use:N\g__chsmscthesis_subtitle_tl
-			}\\[\baselineskip]
+	\begin{tikzpicture}[remember~picture,overlay]
+ 		\node[yshift=-\headerheight] at (current~page.north~west){
+ 			\bool_if:NTF\g__chsmscthesis_gu_logo_bool
+ 				{\chalmersguheader{}}
+ 				{\chalmersheader{}}
+ 		};
+		\tl_if_empty:cF{g__chsmscthesis_cover-image_tl}{
+			\node[
+				anchor=north,
+				yshift=\headerheight
+			] at (current~page.center){
+				\tl_use:c{g__chsmscthesis_cover-image_tl}
+			};
 		}
-		{
-			\__maybe_usekomafont:n{subject}
-			\Large
-			\emph{\mscthesisname{}~\insubjectname{}~\tl_use:N\g__chsmscthesis_subject_tl}
-		}\\[1.6\baselineskip]
-		{
-			\huge
-			\clist_use:Nnnn\g__chsmscthesis_author_clist{~\andname{}~}{\\}{\\}
-		}\\[1.6\baselineskip]
-		{
-			\Large
-			\tl_use:N\g__chsmscthesis_department_tl\\
-		 	\textsc{\chalmersname}\\
-	     	\gothenburgname{}~\tl_use:N\g__chsmscthesis_year_tl\\
-	     	\tl_if_empty:NF\g__chsmscthesis_series_tl{
-	     		\mscthesisname{}~\tl_use:N\g__chsmscthesis_series_tl\\
-	     	}
-	     }
-	\end{FlushLeft}
+		\node[
+			anchor=south~west,
+			xshift=0.1\paperwidth,
+			yshift=0.115\paperheight,
+			inner~sep=0
+		] at (current~page.south~west){
+			\begin{minipage}{\textwidth}
+			\begin{FlushLeft}
+				\noindent
+				{
+					\__maybe_usekomafont:n{title}
+					\Huge
+					\tl_use:N\g__chsmscthesis_title_tl
+				}\\[.5\baselineskip]
+				\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
+					{
+						\__maybe_usekomafont:n{subtitle}
+						\LARGE
+						\tl_use:N\g__chsmscthesis_subtitle_tl
+					}\\[\baselineskip]
+				}
+				{
+					\__maybe_usekomafont:n{subject}
+					\Large
+					\emph{\mscthesisname{}~\insubjectname{}~\tl_use:N\g__chsmscthesis_subject_tl}
+				}\\[1.6\baselineskip]
+				{
+					\huge
+					\clist_use:Nnnn\g__chsmscthesis_author_clist{~\andname{}~}{\\}{\\}
+				}\\[1.6\baselineskip]
+				{
+					\Large
+					\tl_use:N\g__chsmscthesis_department_tl\\
+				 	\textsc{\chalmersname}\\
+			     	\gothenburgname{}~\tl_use:N\g__chsmscthesis_year_tl\\
+			     	\tl_if_empty:NF\g__chsmscthesis_series_tl{
+			     		\mscthesisname{}~\tl_use:N\g__chsmscthesis_series_tl\\
+			     	}
+			     }
+			\end{FlushLeft}
+			\end{minipage}
+		};
+	\end{tikzpicture}
+	\null
 }
 
 %% Title page macros
