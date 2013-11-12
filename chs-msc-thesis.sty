@@ -27,7 +27,7 @@
 \keys_define:nn{chs-msc-thesis}{
 	title      .tl_gset:N = \g__chsmscthesis_title_tl,
 	subtitle   .tl_gset:N = \g__chsmscthesis_subtitle_tl,
-	author     .tl_gset:N = \g__chsmscthesis_author_tl,
+	author  .clist_gset:N = \g__chsmscthesis_author_clist,
 	year       .tl_gset:N = \g__chsmscthesis_year_tl,
 	publisher  .tl_gset:N = \g__chsmscthesis_publisher_tl,
 	subject    .tl_gset:N = \g__chsmscthesis_subject_tl,
@@ -44,12 +44,12 @@
 	\__chsmscthesis_warn_optional_fields:
 }
 \cs_new:Npn\__chsmscthesis_check_required_field:n#1{
-	\str_if_eq:nnTF{keywords}{#1}{
-		\clist_if_empty:NT\g__chsmscthesis_keywords_clist{
-			\msg_error:nnn{chs-msc-thesis}{missing-metadata}{keywords}
+	\clist_if_in:nnTF{author,keywords}{#1}{
+		\clist_if_empty:cT{g__chsmscthesis_#1_clist}{
+			\msg_error:nnn{chs-msc-thesis}{missing-metadata}{#1}
 		}
 	}{
-		\clist_if_in:nnTF{title,author,year,subject,department,abstract}{#1}{
+		\clist_if_in:nnTF{title,year,subject,department,abstract}{#1}{
 			\tl_if_empty:cT{g__chsmscthesis_#1_tl}{
 				\msg_error:nnn{chs-msc-thesis}{missing-metadata}{#1}
 			}
@@ -149,7 +149,7 @@
 		}\\[1.6\baselineskip]
 		{
 			\huge
-			\tl_use:N\g__chsmscthesis_author_tl
+			\clist_use:Nnnn\g__chsmscthesis_author_clist{~and~}{\\}{\\}
 		}\\[1.6\baselineskip]
 		{
 			\Large
@@ -190,7 +190,7 @@
 			}\\[\baselineskip]
 		}
 		\__maybe_textssc:n{
-			\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+			\MakeUppercase{\clist_use:Nnnn\g__chsmscthesis_author_clist{\\}{\\}{\\}}
 		}
 		\vfill
 		{
@@ -215,12 +215,14 @@
 				\tl_use:N\g__chsmscthesis_subtitle_tl\\
 			}
 			\__maybe_textssc:n{
-				\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+				\MakeUppercase{
+					\clist_use:Nnnn\g__chsmscthesis_author_clist{\\}{\\}{\\}
+				}
 			}\\[\baselineskip]
 			{
 			 	\textcopyright{}~
 			 	\__maybe_textssc:n{
-			 		\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+			 		\MakeUppercase{\clist_use:Nnnn\g__chsmscthesis_author_clist{~and~}{,~}{~and~}}
 			 	},~
 			 	\tl_use:N\g__chsmscthesis_year_tl.
 			}\\[\baselineskip]
@@ -260,7 +262,9 @@
 				\tl_use:N\g__chsmscthesis_subtitle_tl\\
 			}
 		 	\__maybe_textssc:n{
-		 		\MakeUppercase{\tl_use:N\g__chsmscthesis_author_tl}
+		 		\MakeUppercase{
+		 			\clist_use:Nnnn\g__chsmscthesis_author_clist{\\}{\\}{\\}
+		 		}
 		 	}\\
 		 	\tl_use:N\g__chsmscthesis_department_tl\\
 		 	Chalmers~University~of~Technology\\
@@ -279,7 +283,7 @@
 	\cs_if_exist_use:NT\hypersetup{{
 		pdfinfo = {
 			Title = {\tl_use:N\g__chsmscthesis_title_tl},
-			Author = {\tl_use:N\g__chsmscthesis_author_tl},
+			Author = {\clist_use:Nnnn\g__chsmscthesis_author_clist{,~}{,~}{,~}},
 			Subject = {\tl_use:N\g__chsmscthesis_subject_tl},
 			Keywords = {\clist_use:Nn\g__chsmscthesis_keywords_clist{,~}}
 		}
@@ -309,7 +313,9 @@
 \RequirePackage{tocstyle}
 \usetocstyle{nopagecolumn}
 \settocstylefeature[2]{entryhook}{\itshape}
-\settocstylefeature{pagenumberhook}{\llap{\textbullet\ }\ }
+\@ifpackageloaded{MinionPro}{
+	\settocstylefeature{pagenumberhook}{\llap{\textbullet\ }\ }
+}{}
 % Section titles
 \PassOptionsToPackage{explicit}{titlesec}
 \RequirePackage{titlesec}
