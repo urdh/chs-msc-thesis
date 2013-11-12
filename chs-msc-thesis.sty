@@ -349,9 +349,11 @@
 \RequirePackage{tocstyle}
 \usetocstyle{nopagecolumn}
 \settocstylefeature[2]{entryhook}{\itshape}
-\@ifpackageloaded{MinionPro}{
-	\settocstylefeature{pagenumberhook}{\llap{\textbullet\ }\ }
-}{}
+\AtBeginDocument{
+	\@ifpackageloaded{MinionPro}{
+		\settocstylefeature{pagenumberhook}{\llap{\textbullet\ }\ }
+	}{}
+}
 % Section titles
 \PassOptionsToPackage{explicit}{titlesec}
 \RequirePackage{titlesec}
