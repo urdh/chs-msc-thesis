@@ -1,0 +1,48 @@
+\documentclass[paper=A4,DIV=calc]{scrbook}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{chs-msc-thesis}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{lipsum,blindtext}
+%\usepackage[fullfamily,opticals,italicgreek,%
+%			minionint,footnotefigures]{MinionPro}
+%\usepackage[medfamily,opticals]{CronosPro}
+%\usepackage[varqu,varl,scaled=0.9]{zi4}
+
+\SetupMetadata{
+	% Required metadata
+	title = {Thesis class test},
+	author = {A. Author, B. Author},
+	year = {2014},
+	subject = {Any subject},
+	department = {Department of Anything},
+	keywords = {key, word, list},
+	abstract = {\lipsum[1]},
+	% Optional metadata
+	subtitle = {A sample subtitle},
+	publisher = {Publisher},
+	series = {2014:1},
+	%cover-caption = {Bildtext till framsidebilden},
+	%cover-image = {\includegraphics{...}}
+}
+
+\begin{document}
+	\frontmatter
+	\makefrontmatter[gu-logo]
+
+	\cleardoublepage
+	\tableofcontents
+	
+	\mainmatter
+	\Blinddocument
+	\blinddocument
+
+	\appendix
+	\chapter{An appendix}
+	\blinddocument
+
+	\backmatter
+	\chapter*{Index}
+	\blinddocument
+\end{document}
