@@ -93,6 +93,38 @@
 		\__chsmscthesis_warn_optional_field:n
 }
 
+%% Text available for translation
+\cs_if_exist_use:NT\addto{\captionsenglish}{
+	\cs_gset:Npn\mscthesisname{Master's~Thesis}
+	\cs_gset:Npn\insubjectname{in}
+	\cs_gset:Npn\andname{and}
+	\cs_gset:Npn\chalmersname{Chamers~University~of~Technology}
+	\cs_gset:Npn\gothenburgname{Gothenburg,~Sweden}
+	\cs_gset:Npn\reportnoname{REPORT~NO.}
+	\cs_gset:Npn\techreportnoname{Technical~report~no}
+	\cs_gset:Npn\chsaddrname{SE--412\,96~Göteborg\\Sweden}
+	\cs_gset:Npn\phonename{Telephone~{+46\,(0)31--772\,1000}}
+	\cs_if_exist:NF\abstractname{
+		\cs_gset:Npn\abstractname{Summary}
+	}
+	\cs_gset:Npn\keywordsname{Keywords}
+}
+\cs_if_exist_use:NTF\addto{\captionsswedish}{\use_none:n}{
+	\cs_gset:Npn\mscthesisname{Examensarbete}
+	\cs_gset:Npn\insubjectname{inom}
+	\cs_gset:Npn\andname{och}
+	\cs_gset:Npn\chalmersname{Chalmers~Tekniska~Högskola}
+	\cs_gset:Npn\gothenburgname{Göteborg}
+	\cs_gset:Npn\reportnoname{RAPPORT~NR.}
+	\cs_gset:Npn\techreportnoname{Teknisk~rapport~nr}
+	\cs_gset:Npn\chsaddrname{412\,96~Göteborg}
+	\cs_gset:Npn\phonename{Telefon~{031--772\,1000}}
+	\cs_if_exist:NF\abstractname{
+		\cs_gset:Npn\abstractname{Sammanfattning}
+	}
+	\cs_gset:Npn\keywordsname{Nyckelord}
+}
+
 %% Cover page macros
 \cs_set:Npn\__chsmscthesis_background_image:n#1{
 	\AddToShipoutPictureBG*{
@@ -145,19 +177,19 @@
 		{
 			\__maybe_usekomafont:n{subject}
 			\Large
-			\emph{Master's~Thesis~in~\tl_use:N\g__chsmscthesis_subject_tl}
+			\emph{\mscthesisname{}~\insubjectname{}~\tl_use:N\g__chsmscthesis_subject_tl}
 		}\\[1.6\baselineskip]
 		{
 			\huge
-			\clist_use:Nnnn\g__chsmscthesis_author_clist{~and~}{\\}{\\}
+			\clist_use:Nnnn\g__chsmscthesis_author_clist{~\andname{}~}{\\}{\\}
 		}\\[1.6\baselineskip]
 		{
 			\Large
 			\tl_use:N\g__chsmscthesis_department_tl\\
-		 	\textsc{Chalmers~University~of~Technology}\\
-	     	Gothenburg,~Sweden~\tl_use:N\g__chsmscthesis_year_tl\\
+		 	\textsc{\chalmersname}\\
+	     	\gothenburgname{}~\tl_use:N\g__chsmscthesis_year_tl\\
 	     	\tl_if_empty:NF\g__chsmscthesis_series_tl{
-	     		Master's~Thesis~\tl_use:N\g__chsmscthesis_series_tl\\
+	     		\mscthesisname{}~\tl_use:N\g__chsmscthesis_series_tl\\
 	     	}
 	     }
 	\end{FlushLeft}
@@ -177,7 +209,7 @@
 			\vspace*{4cm}
 		}{
 			\__maybe_textssc:n{
-				\small REPORT~NO.\ \tl_use:N\g__chsmscthesis_series_tl
+				\small \reportnoname{}\ \tl_use:N\g__chsmscthesis_series_tl
 			}\\[4cm]
 		}
 		{
@@ -195,8 +227,8 @@
 		\vfill
 		{
 			\tl_use:N\g__chsmscthesis_department_tl\\
-			\textsc{Chalmers~University~of~Technology}\\
-			Gothenburg,~Sweden~\tl_use:N\g__chsmscthesis_year_tl\\
+			\textsc{\chalmersname}\\
+			\gothenburgname{}~\tl_use:N\g__chsmscthesis_year_tl\\
 		}
 	\endgroup
 }
@@ -222,19 +254,18 @@
 			{
 			 	\textcopyright{}~
 			 	\__maybe_textssc:n{
-			 		\MakeUppercase{\clist_use:Nnnn\g__chsmscthesis_author_clist{~and~}{,~}{~and~}}
+			 		\exp_args:Nx\MakeUppercase{\clist_use:Nnnn\g__chsmscthesis_author_clist{~\andname{}~}{,~}{~\andname{}~}}
 			 	},~
 			 	\tl_use:N\g__chsmscthesis_year_tl.
 			}\\[\baselineskip]
 			\tl_if_empty:NF\g__chsmscthesis_series_tl{
-				Technical~report~no~
+				\techreportnoname{}~
 				\tl_use:N\g__chsmscthesis_series_tl\\
 			}
 			\tl_use:N\g__chsmscthesis_department_tl\\
-			Chalmers~University~of~Technology\\
-			SE--412\,96~Göteborg\\
-			Sweden\\
-			Telephone~{+46\,(0)31--772\,1000}\\
+			\chalmersname\\
+			\chsaddrname\\
+			\phonename\\
 		\endgroup
 		\vfill
 		\tl_if_empty:cF{g__chsmscthesis_cover-caption_tl}{
@@ -246,7 +277,7 @@
 		}{
 			\tl_use:N\g__chsmscthesis_publisher_tl\\
 		}
-		Gothenburg,~Sweden~\tl_use:N\g__chsmscthesis_year_tl
+		\gothenburgname{}~\tl_use:N\g__chsmscthesis_year_tl
 	\end{FlushLeft}
 }
 
@@ -267,15 +298,15 @@
 		 		}
 		 	}\\
 		 	\tl_use:N\g__chsmscthesis_department_tl\\
-		 	Chalmers~University~of~Technology\\
+		 	\chalmersname\\
 		 }
 	\end{FlushLeft}
 	\vspace{2\bigskipamount}
-	\minisec{\cs_if_exist_use:NF\abstractname{Summary}}
+	\minisec{\abstractname}
 	\tl_use:N\g__chsmscthesis_abstract_tl
 	\vfill
 	\noindent
-	Keywords:~\clist_use:Nn\g__chsmscthesis_keywords_clist{,~}
+	\keywordsname{}:~\clist_use:Nn\g__chsmscthesis_keywords_clist{,~}
 }
 
 %% PDF metadata

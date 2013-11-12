@@ -1,10 +1,10 @@
 # Chalmers Univeristy of Technology thesis package (unofficial)
 
-This is an unofficial package that defines macros for the layout of the preamble of Master's theses at Chalmers University of Technology, according to the guidelines presented at Studentportalen. Hopefully it's useful to people other than myself.
+This is an unofficial package that defines macros for the layout of the preamble of Master's theses at Chalmers University of Technology, according to the guidelines presented at Studentportalen. It also makes a few stylistic changes to the table of contents and sectioning macros, among other things. Hopefully it's useful to people other than myself.
 
-As these theses must be written in english, no `babel` support is provided for the preamble pages. The package should work with any document class and font stack, as well as with other packages, but it is tailored for the `scrbook` KOMA-script document class along with Minion Pro and Cronos Pro fonts.
+Although master's theses are to be written in english, the class supports `babel` and provides english and swedish translations of the preamble. The package should work with any document class and font stack, as well as with other packages, but it is tailored for the `scrbook` KOMA-script document class along with Minion Pro and Cronos Pro fonts.
 
-The actual package, `chs-msc-thesis.sty`, is available under the MIT license (see `LICENSE`). The sample file `chs-msc-thesis-test.tex` is in the public domain. The copyright of the two PDF files `chs-msc-frontpage.pdf` and `chs-msc-frontpage-gu.pdf` probably belongs to Chalmers University of Technology, so take appropriate measures before using them. They have been reverse-engineered from material publically available from Studentportalen at Chalmers (see links at the end of this document).
+The actual package, `chs-msc-thesis.sty`, is available under the MIT license (see `LICENSE`). The sample file `chs-msc-thesis-test.tex` is in the public domain. The logotypes in the two PDF files `chs-msc-frontpage.pdf` and `chs-msc-frontpage-gu.pdf` is trademarked by their respective owners (Chalmers University of Technology and Gothenburg University), so take appropriate measures before using them. They have been reverse-engineered from material publically available from Studentportalen at Chalmers (see links at the end of this document).
 
 ## Usage
 
