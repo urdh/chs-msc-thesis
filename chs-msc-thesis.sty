@@ -337,8 +337,8 @@
 
 %% Formatting
 % Header/footer
-\RequirePackage{scrpage2}
-\gappto\frontmatter{\pagestyle{scrplain}}
+\RequirePackage{scrlayer-scrpage}
+\gappto\frontmatter{\pagestyle{plain.scrheadings}}
 \gappto\mainmatter{\pagestyle{scrheadings}}
 \renewcommand\chaptermark[1]
 	{\markleft{\thechapter{}.\;\MakeMarkcase{#1}}}
