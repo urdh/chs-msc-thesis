@@ -27,6 +27,7 @@ Then, issue the `\SetupMetadata` macro:
 	subtitle = {Optional subtitle},
 	publisher = {Optional publisher},
 	series = {Optional series number},
+	issn = {0000--0000},
 	% Supply either both or none of these
 	cover-caption = {Optional cover caption},
 	cover-image = {\includegraphics{...}}
