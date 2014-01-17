@@ -1,5 +1,5 @@
 \RequirePackage{expl3,xparse}
-\ProvidesExplPackage{chs-msc-thesis}{2013/11/12}{r1}
+\ProvidesExplPackage{chs-msc-thesis}{2014/01/17}{r2}
 	{Chalmers University of Technology thesis macros (unofficial)}
 
 %% Required packages
@@ -12,6 +12,8 @@
 \msg_new:nnnn{chs-msc-thesis}{missing-metadata}{Metadata~field~`#1'~is~missing!}
 	{Please~provide~the~appropriate~value~using~`\token_to_str:N\SetupMetadata'.}
 \msg_new:nnn{chs-msc-thesis}{incorrect-usage}{Incorrect~usage~of~`\token_to_str:N#1'.}
+\msg_new:nnnn{chs-msc-thesis}{deprecated-construct}{The~use~of~`\token_to_str:N#1'~is~deprecated!}
+	{I~will~try~to~recover~from~this~by~#2.}
 
 %% Useful things
 \cs_new:Npn\__maybe_usekomafont:n#1{
@@ -67,7 +69,7 @@
 		\__chsmscthesis_check_required_field:n
 }
 \cs_new:Npn\__chsmscthesis_warn_optional_field:n#1{
-	\clist_if_in:nnTF{subtitle,publisher,series,cover-image,cover-caption}{#1}{
+	\clist_if_in:nnTF{subtitle,publisher,series,cover-image,cover-caption,issn}{#1}{
 		\tl_if_empty:cTF{g__chsmscthesis_#1_tl}{
 			\msg_warning:nnn{chs-msc-thesis}{missing-metadata}{#1}
 		}{
@@ -269,7 +271,7 @@
 				\tl_use:N\g__chsmscthesis_series_tl\\
 			}
 			\tl_if_empty:NF\g__chsmscthesis_issn_tl{
-				ISSN:~
+				\__maybe_textssc:n{issn}:~
 				\tl_use:N\g__chsmscthesis_issn_tl\\
 			}
 			\tl_use:N\g__chsmscthesis_department_tl\\
@@ -338,6 +340,22 @@
 	\titlepage
 	\imprintpage
 	\abstractpage
+}
+%% Override the regular \maketitle macro
+\DeclareDocumentCommand\maketitle{}{
+	\msg_warning:nnnn{chs-msc-thesis}{deprecated-construct}{\maketitle}
+		{issuing~the~command~sequence~`\token_to_str:N\makefrontmatter'~instead}
+	\makefrontmatter
+}
+%% Do the same with the abstract environment
+\DeclareDocumentEnvironment{abstract}{}{
+	\msg_warning:nnnn{chs-msc-thesis}{deprecated-construct}{\begin{abstract}}
+		{ignoring~the~contents~of~the~`abstract'~environment.}
+	\coffin_clear:N\l_tmpa_coffin
+    \hcoffin_set:Nw\l_tmpa_coffin
+}{
+	\hcoffin_set_end:
+	\coffin_clear:N\l_tmpa_coffin
 }
 
 %% Formatting
