@@ -365,6 +365,13 @@
 }
 
 %% Formatting
+% French spacing and protrusion
+\AtEndOfClass{
+	\RequirePackage{microtype}
+	\frenchspacing
+}
+% If tufte-latex, don't bother with the rest.
+\@ifclassloaded{tufte-book}{\endinput}{}%
 % Header/footer
 \cs_if_exist:NTF\KOMAoptions{
 	\RequirePackage{scrlayer-scrpage}
@@ -455,6 +462,4 @@
 % Other
 \let\raggedsection\RaggedRight
 \AtEndPreamble{\cs_if_exist_use:NT\KOMAoptions{{DIV=current}}}
-% French spacing and protrusion
-\RequirePackage{microtype}
-\frenchspacing
+\endinput
