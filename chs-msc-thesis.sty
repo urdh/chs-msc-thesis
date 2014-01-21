@@ -385,15 +385,17 @@
 	{\markleft{\thechapter{}.\;\MakeMarkcase{#1}}}
 \renewcommand\sectionmark[1]
 	{\markright{\MakeMarkcase{#1}}}
-% Table of contents
-\PassOptionsToPackage{tocgraduated}{tocstyle}
-\RequirePackage{tocstyle}
-\usetocstyle{nopagecolumn}
-\settocstylefeature[2]{entryhook}{\itshape}
-\AtBeginDocument{
-	\@ifpackageloaded{MinionPro}{
-		\settocstylefeature{pagenumberhook}{\llap{\textbullet\ }\ }
-	}{}
+% Table of contents (not in memoir)
+\@ifclassloaded{memoir}{}{
+	\PassOptionsToPackage{tocgraduated}{tocstyle}
+	\RequirePackage{tocstyle}
+	\usetocstyle{nopagecolumn}
+	\settocstylefeature[2]{entryhook}{\itshape}
+	\AtBeginDocument{
+		\@ifpackageloaded{MinionPro}{
+			\settocstylefeature{pagenumberhook}{\llap{\textbullet\ }\ }
+		}{}
+	}
 }
 % Section titles
 \PassOptionsToPackage{explicit}{titlesec}
