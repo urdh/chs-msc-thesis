@@ -1,4 +1,4 @@
-\RequirePackage{expl3,xparse}
+\RequirePackage{expl3,xparse,l3keys2e}
 \ProvidesExplPackage{chs-msc-thesis}{2014/01/17}{r2}
 	{Chalmers University of Technology thesis macros (unofficial)}
 
@@ -7,6 +7,36 @@
 \RequirePackage{graphicx,tikz} % For cover page background
 \RequirePackage{ragged2e} % For FlushLeft on various pages
 \RequirePackage{chs-msc-thesis-logos} % Logotypes
+
+%% Package options
+\keys_define:nn{chs-msc-thesis / global}{
+	headers   .bool_set:N = \g__chsmscthesis_setup_headers_bool,
+	titles    .bool_set:N = \g__chsmscthesis_setup_titles_bool,
+	toc       .bool_set:N = \g__chsmscthesis_setup_toc_bool,
+	figures   .bool_set:N = \g__chsmscthesis_setup_figures_bool,
+	footnotes .bool_set:N = \g__chsmscthesis_setup_footnotes_bool,
+	headers   .initial:n  = true,
+	titles    .initial:n  = true,
+	toc       .initial:n  = true,
+	figures   .initial:n  = true,
+	footnotes .initial:n  = true,
+	nothing   .meta:n = {
+		headers   = false,
+		titles    = false,
+		toc       = false,
+		figures   = false,
+		footnotes = false,
+	},
+}
+\ProcessKeysOptions{chs-msc-thesis / global}
+% If tufte-latex, disable all things.
+\@ifclassloaded{tufte-book}{
+	\keys_set:nn{chs-msc-thesis / global}{ nothing }
+}{}%
+% If memoir, disable toc.
+\@ifclassloaded{memoir}{
+	\keys_set:nn{chs-msc-thesis / global}{ toc = false }
+}{}
 
 %% Warning/error messages
 \msg_new:nnnn{chs-msc-thesis}{missing-metadata}{Metadata~field~`#1'~is~missing!}
@@ -31,9 +61,12 @@
 \cs_new:Npn\__maybe_minisec:n#1{
 	\cs_if_exist_use:NTF\minisec{{#1}}{\textbf{#1}\\}
 }
+\cs_new:Npn\__unless_usekomafont:n#1{
+	\cs_if_exist:NF\usekomafont{#1}
+}
 
 %% Setting metadata
-\keys_define:nn{chs-msc-thesis}{
+\keys_define:nn{chs-msc-thesis / local}{
 	title      .tl_gset:N = \g__chsmscthesis_title_tl,
 	subtitle   .tl_gset:N = \g__chsmscthesis_subtitle_tl,
 	author  .clist_gset:N = \g__chsmscthesis_author_clist,
@@ -49,7 +82,7 @@
 	issn       .tl_gset:N = \g__chsmscthesis_issn_tl,
 }
 \DeclareDocumentCommand\SetupMetadata{m}{
-	\keys_set:nn{chs-msc-thesis}{#1}
+	\keys_set:nn{chs-msc-thesis / local}{#1}
 	\__chsmscthesis_check_required_fields:
 	\__chsmscthesis_warn_optional_fields:
 }
@@ -365,13 +398,6 @@
 }
 
 %% Formatting
-% French spacing and protrusion
-\AtEndOfClass{
-	\RequirePackage{microtype}
-	\frenchspacing
-}
-% If tufte-latex, don't bother with the rest.
-\@ifclassloaded{tufte-book}{\endinput}{}%
 % Header/footer
 \cs_if_exist:NTF\KOMAoptions{
 	\RequirePackage{scrlayer-scrpage}
@@ -381,12 +407,14 @@
 	\gappto\frontmatter{\pagestyle{plain}}
 	\gappto\mainmatter{\pagestyle{headings}}
 }
-\renewcommand\chaptermark[1]
-	{\markleft{\thechapter{}.\;\MakeMarkcase{#1}}}
-\renewcommand\sectionmark[1]
-	{\markright{\MakeMarkcase{#1}}}
-% Table of contents (not in memoir)
-\@ifclassloaded{memoir}{}{
+\bool_if:NT\g__chsmscthesis_setup_headers_bool{
+	\renewcommand\chaptermark[1]
+		{\markleft{\thechapter{}.\;\MakeMarkcase{#1}}}
+	\renewcommand\sectionmark[1]
+		{\markright{\MakeMarkcase{#1}}}
+}
+% Table of contents
+\bool_if:NT\g__chsmscthesis_setup_toc_bool{
 	\PassOptionsToPackage{tocgraduated}{tocstyle}
 	\RequirePackage{tocstyle}
 	\usetocstyle{nopagecolumn}
@@ -398,70 +426,80 @@
 	}
 }
 % Section titles
-\PassOptionsToPackage{explicit}{titlesec}
-\RequirePackage{titlesec}
-\AtEndPreamble{
-	\cs_if_exist:NF\chapterheadstartvskip{
-		\cs_gset:Npn\chapterheadstartvskip{
-			\vspace*{2.3\baselineskip}
+\bool_if:NT\g__chsmscthesis_setup_titles_bool{
+	\PassOptionsToPackage{explicit}{titlesec}
+	\RequirePackage{titlesec}
+	\AtEndPreamble{
+		\cs_if_exist:NF\chapterheadstartvskip{
+			\cs_gset:Npn\chapterheadstartvskip{
+				\vspace*{2.3\baselineskip}
+			}
+		}
+		\cs_if_exist:NF\chapterheadendvskip{
+			\cs_gset:Npn\chapterheadendvskip{
+				\vspace{1.725\baselineskip~plus~.115\baselineskip~minus~.192\baselineskip}
+			}
 		}
 	}
-	\cs_if_exist:NF\chapterheadendvskip{
-		\cs_gset:Npn\chapterheadendvskip{
-			\vspace{1.725\baselineskip~plus~.115\baselineskip~minus~.192\baselineskip}
-		}
-	}
+	\cs_if_exist_use:NT\KOMAoptions{{
+		numbers=noenddot,
+		headings=small
+	}}
+	\cs_gset_nopar:Npn\thechapter{\Roman{chapter}\__maybe_autodot:}
+	\cs_gset_nopar:Npn\thesection{\arabic{section}\__maybe_autodot:}
+	\cs_if_exist_use:NT\addtokomafont{{chapter}{\huge}}
+	\cs_if_exist_use:NT\addtokomafont{{subsection}{\large}}
+	\titleformat{\chapter}[display]{
+		\chapterheadstartvskip
+		\Centering
+		\__unless_usekomafont:n{\LARGE}
+		\__maybe_usekomafont:n{disposition}
+		\__maybe_usekomafont:n{chapter}
+	}{\Centering\Huge\thechapter}{.5\baselineskip}{#1}[\chapterheadendvskip]
+	\titleformat{\section}[hang]{
+		\__unless_usekomafont:n{\large}
+		\__maybe_usekomafont:n{section}
+	}{\llap{\thesection\hspace{1ex}}}{0pt}{\textsc{\MakeLowercase{#1}}}[\vspace{-.5\baselineskip}]
+	\titleformat{\subsection}[hang]{
+		\__unless_usekomafont:n{\large}
+		\__maybe_usekomafont:n{subsection}
+	}{\llap{\thesubsection\hspace{1ex}}}{0pt}{\textsl{\textsc{\MakeLowercase{#1}}}}[\vspace{-.5\baselineskip}]
+	\titleformat{\subsubsection}[hang]{
+		\__maybe_usekomafont:n{subsubsection}
+	}{\llap{\thesubsubsection\hspace{1ex}}}{0pt}{\textit{#1}}[\vspace{-.5\baselineskip}]
+	\titleformat{\paragraph}[runin]{
+		\__maybe_usekomafont:n{paragraph}
+	}{\theparagraph}{1ex}{\textsc{\MakeLowercase{#1}}}[]
+	\titleformat{\subparagraph}[runin]{
+		\__maybe_usekomafont:n{subparagraph}
+	}{\thesubparagraph}{1ex}{\textsl{\textsc{\MakeLowercase{#1}}}}[]
 }
-\cs_if_exist_use:NT\KOMAoptions{{
-	numbers=noenddot,
-	headings=small
-}}
-\cs_gset_nopar:Npn\thechapter{\Roman{chapter}\__maybe_autodot:}
-\cs_gset_nopar:Npn\thesection{\arabic{section}\__maybe_autodot:}
-\cs_if_exist_use:NT\addtokomafont{{chapter}{\huge}}
-\cs_if_exist_use:NT\addtokomafont{{subsection}{\large}}
-\titleformat{\chapter}[display]{
-	\chapterheadstartvskip
-	\Centering
-	\__maybe_usekomafont:n{disposition}
-	\__maybe_usekomafont:n{chapter}
-}{\Centering\Huge\thechapter}{.5\baselineskip}{#1}[\chapterheadendvskip]
-\titleformat{\section}[hang]{
-	\__maybe_usekomafont:n{section}
-}{\llap{\thesection\hspace{1ex}}}{0pt}{\textsc{\MakeLowercase{#1}}}[\vspace{-.5\baselineskip}]
-\titleformat{\subsection}[hang]{
-	\__maybe_usekomafont:n{subsection}
-}{\llap{\thesubsection\hspace{1ex}}}{0pt}{\textsl{\textsc{\MakeLowercase{#1}}}}[\vspace{-.5\baselineskip}]
-\titleformat{\subsubsection}[hang]{
-	\__maybe_usekomafont:n{subsubsection}
-}{\llap{\thesubsubsection\hspace{1ex}}}{0pt}{\textit{#1}}[\vspace{-.5\baselineskip}]
-\titleformat{\paragraph}[runin]{
-	\__maybe_usekomafont:n{paragraph}
-}{\theparagraph}{1ex}{\textsc{\MakeLowercase{#1}}}[]
-\titleformat{\subparagraph}[runin]{
-	\__maybe_usekomafont:n{subparagraph}
-}{\thesubparagraph}{1ex}{\textsl{\textsc{\MakeLowercase{#1}}}}[]
 % Figure captions
-\RequirePackage{chngcntr}
-\counterwithout{figure}{chapter}
-\counterwithout{table}{chapter}
-%\cs_gset_nopar:Npn\thefigure{\arabic{figure}}
-%\cs_gset_nopar:Npn\thetable{\arabic{table}}
-\cs_if_exist_use:NT\addtokomafont{{caption}{\itshape}}
-\cs_if_exist_use:NT\addtokomafont{{captionlabel}{\bfseries}}
-\cs_if_exist_use:NT\KOMAoptions{{
-	captions=belowfigure,
-	captions=abovetable,
-}}
-\cs_if_exist_use:NT\setcapindent{{0em}}
+\bool_if:NT\g__chsmscthesis_setup_figures_bool{
+	\RequirePackage{chngcntr}
+	\counterwithout{figure}{chapter}
+	\counterwithout{table}{chapter}
+	\cs_if_exist_use:NT\addtokomafont{{caption}{\itshape}}
+	\cs_if_exist_use:NT\addtokomafont{{captionlabel}{\bfseries}}
+	\cs_if_exist_use:NT\KOMAoptions{{
+		captions=belowfigure,
+		captions=abovetable,
+	}}
+	\cs_if_exist_use:NT\setcapindent{{0em}}
+}
 % Footnotes
-\cs_if_exist_use:NT\KOMAoptions{{
-	footnotes=multiple
-}}
-\PassOptionsToPackage{perpage,para,bottom,%
-					  stable,multiple,norule}{footmisc}
-\RequirePackage{footmisc}
+\bool_if:NT\g__chsmscthesis_setup_footnotes_bool{
+	\cs_if_exist_use:NT\KOMAoptions{{
+		footnotes=multiple
+	}}
+	\PassOptionsToPackage{perpage,para,bottom,%
+						  stable,multiple,norule}{footmisc}
+	\RequirePackage{footmisc}
+}
 % Other
 \let\raggedsection\RaggedRight
 \AtEndPreamble{\cs_if_exist_use:NT\KOMAoptions{{DIV=current}}}
+% French spacing and protrusion
+\RequirePackage{microtype}
+\frenchspacing
 \endinput

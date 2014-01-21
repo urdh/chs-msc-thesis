@@ -52,6 +52,19 @@ Then, issue the `\makefrontmatter` macro, with the optional argument accepting t
 \end{document}
 ```
 
+## Options
+
+The package provides a few options to control the setup of style elements, which may not be desirable is the package is only used to generate the title pages. There are five boolean key-value options, all initially set to `true`, and one regular option:
+
+* `headers=false` disables style changes to the page header, in particular changes applied to the `\chaptermark` and `\sectionmark` commands.
+* `titles=false` disables style changes to the sectioning commands.
+* `toc=false` disables changes to the table of contents style.
+* `figures=false` disables changes to the styling of figure (and table) captions.
+* `footnotes=false` disables loading of the `footmisc` package with a few predefined options (note: use `\PassOptionsToPackage` if you just want to pass additional options to `footmisc`).
+* `nothing` disables all of the above.
+
+When using the package with `tufte-book`, the `nothing` option is automatically applied. When using the package with `memoir`, the `toc=false` option is automatically applied.
+
 ## See also
 
 * The example file `chs-msc-thesis-test.tex`
