@@ -25,6 +25,12 @@
 \cs_new:Npn\__maybe_textsw:n#1{
 	\cs_if_exist_use:NF\textsw{\textit}{#1}
 }
+\cs_new:Npn\__maybe_autodot:{
+	\cs_if_exist_use:N\autodot
+}
+\cs_new:Npn\__maybe_minisec:n#1{
+	\cs_if_exist_use:NTF\minisec{{#1}}{\textbf{#1}\\}
+}
 
 %% Setting metadata
 \keys_define:nn{chs-msc-thesis}{
@@ -314,7 +320,7 @@
 		 }
 	\end{FlushLeft}
 	\vspace{2\bigskipamount}
-	\minisec{\abstractname}
+	\__maybe_minisec:n{\abstractname}
 	\tl_use:N\g__chsmscthesis_abstract_tl
 	\vfill
 	\noindent
@@ -360,9 +366,14 @@
 
 %% Formatting
 % Header/footer
-\RequirePackage{scrlayer-scrpage}
-\gappto\frontmatter{\pagestyle{plain.scrheadings}}
-\gappto\mainmatter{\pagestyle{scrheadings}}
+\cs_if_exist:NTF\KOMAoptions{
+	\RequirePackage{scrlayer-scrpage}
+	\gappto\frontmatter{\pagestyle{plain.scrheadings}}
+	\gappto\mainmatter{\pagestyle{scrheadings}}
+}{
+	\gappto\frontmatter{\pagestyle{plain}}
+	\gappto\mainmatter{\pagestyle{headings}}
+}
 \renewcommand\chaptermark[1]
 	{\markleft{\thechapter{}.\;\MakeMarkcase{#1}}}
 \renewcommand\sectionmark[1]
@@ -380,12 +391,24 @@
 % Section titles
 \PassOptionsToPackage{explicit}{titlesec}
 \RequirePackage{titlesec}
+\AtEndPreamble{
+	\cs_if_exist:NF\chapterheadstartvskip{
+		\cs_gset:Npn\chapterheadstartvskip{
+			\vspace*{2.3\baselineskip}
+		}
+	}
+	\cs_if_exist:NF\chapterheadendvskip{
+		\cs_gset:Npn\chapterheadendvskip{
+			\vspace{1.725\baselineskip~plus~.115\baselineskip~minus~.192\baselineskip}
+		}
+	}
+}
 \cs_if_exist_use:NT\KOMAoptions{{
 	numbers=noenddot,
 	headings=small
 }}
-\cs_gset_nopar:Npn\thechapter{\Roman{chapter}\autodot}
-\cs_gset_nopar:Npn\thesection{\arabic{section}\autodot}
+\cs_gset_nopar:Npn\thechapter{\Roman{chapter}\__maybe_autodot:}
+\cs_gset_nopar:Npn\thesection{\arabic{section}\__maybe_autodot:}
 \cs_if_exist_use:NT\addtokomafont{{chapter}{\huge}}
 \cs_if_exist_use:NT\addtokomafont{{subsection}{\large}}
 \titleformat{\chapter}[display]{
@@ -421,7 +444,7 @@
 	captions=belowfigure,
 	captions=abovetable,
 }}
-\setcapindent{0em}
+\cs_if_exist_use:NT\setcapindent{0em}
 % Footnotes
 \cs_if_exist_use:NT\KOMAoptions{{
 	footnotes=multiple
