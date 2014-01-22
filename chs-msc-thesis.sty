@@ -492,9 +492,10 @@
 	\cs_if_exist_use:NT\KOMAoptions{{
 		footnotes=multiple
 	}}
-	\PassOptionsToPackage{perpage,para,bottom,%
+	\PassOptionsToPackage{perpage,para,bottom,hang,%
 						  stable,multiple,norule}{footmisc}
 	\RequirePackage{footmisc}
+	\RequirePackage{fnpct}
 }
 % Other
 \let\raggedsection\RaggedRight
