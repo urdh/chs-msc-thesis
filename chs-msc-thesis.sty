@@ -81,7 +81,7 @@
 	keywords   .clist_gset:N = \g__chsmscthesis_keywords_clist,
 	issn       .tl_gset:N = \g__chsmscthesis_issn_tl,
 }
-\DeclareDocumentCommand\SetupMetadata{m}{
+\DeclareDocumentCommand\SetupMetadata{+m}{
 	\keys_set:nn{chs-msc-thesis / local}{#1}
 	\__chsmscthesis_check_required_fields:
 	\__chsmscthesis_warn_optional_fields:
