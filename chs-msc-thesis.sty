@@ -3,6 +3,7 @@
 	{Chalmers University of Technology thesis macros (unofficial)}
 
 %% Required packages
+\RequirePackage{l3sort} % For sorting keywords
 \RequirePackage{etoolbox} % Very useful
 \RequirePackage{graphicx,tikz} % For cover page background
 \RequirePackage{ragged2e} % For FlushLeft on various pages
@@ -85,6 +86,9 @@
 	\keys_set:nn{chs-msc-thesis / local}{#1}
 	\__chsmscthesis_check_required_fields:
 	\__chsmscthesis_warn_optional_fields:
+	\clist_sort:Nn\g__chsmscthesis_keywords_clist{
+        \int_compare:nTF{\pdftex_strcmp:D{##1}{##2} = -1}{\sort_ordered:}{\sort_reversed:}
+	}
 }
 \cs_new:Npn\__chsmscthesis_check_required_field:n#1{
 	\clist_if_in:nnTF{author,keywords}{#1}{
