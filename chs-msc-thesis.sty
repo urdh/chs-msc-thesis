@@ -173,22 +173,10 @@
 }
 
 %% Cover page macros
-\keys_define:nn{chs-msc-thesis/coverpage}{
-	gu-logo .bool_gset:N = \g__chsmscthesis_gu_logo_bool,
-	gu-logo .initial:n = {false},
-	gu-logo .default:n = {true}
-}
-\DeclareDocumentCommand\coverpage{o}{
-	\__chsmscthesis_check_required_fields:
-	\keys_set:nn{chs-msc-thesis/coverpage}{}
-	\IfNoValueF{#1}{
-		\keys_set:nn{chs-msc-thesis/coverpage}{#1}
-	}
-	\cleardoublepage
-	\thispagestyle{empty}
+\cs_new:Npn\__chsmscthesis_coverpage_grid_style:N#1{
 	\begin{tikzpicture}[remember~picture,overlay]
  		\node[yshift=-\headerheight] at (current~page.north~west){
- 			\bool_if:NTF\g__chsmscthesis_gu_logo_bool
+ 			\bool_if:NTF#1
  				{\chalmersguheader{}}
  				{\chalmersheader{}}
  		};
@@ -244,6 +232,25 @@
 		};
 	\end{tikzpicture}
 	\null
+}
+\keys_define:nn{chs-msc-thesis/coverpage}{
+	gu-logo .bool_gset:N = \g__chsmscthesis_gu_logo_bool,
+	gu-logo .initial:n = {false},
+	gu-logo .default:n = {true},
+	style   .choice_code:n = {\cs_set_eq:Nc\__chsmscthesis_coverpage:N{__chsmscthesis_coverpage_\tl_use:N\l_keys_choice_tl _style:N}},
+	style   .generate_choices:n = {grid},
+	style   .initial:n = {grid},
+	style   .value_required:
+}
+\DeclareDocumentCommand\coverpage{o}{
+	\__chsmscthesis_check_required_fields:
+	\keys_set:nn{chs-msc-thesis/coverpage}{}
+	\IfNoValueF{#1}{
+		\keys_set:nn{chs-msc-thesis/coverpage}{#1}
+	}
+	\cleardoublepage
+	\thispagestyle{empty}
+	\__chsmscthesis_coverpage:N\g__chsmscthesis_gu_logo_bool
 }
 
 %% Title page macros
