@@ -211,15 +211,15 @@
 }
 \cs_new:Npn\__chsmscthesis_coverpage_grid_style:N#1{
 	\begin{tikzpicture}[remember~picture,overlay]
-		\node[yshift=-\headerheight] at (current~page.north~west){
+		\node[yshift=-\g__chsmscthesis_grid_header_height] at (current~page.north~west){
 			\bool_if:NTF#1
-				{\chalmersgugridheader{}}
-				{\chalmersgridheader{}}
+				{\__chsmscthesis_gu_header_grid:}
+				{\__chsmscthesis_chalmers_header_grid:}
 		};
 		\tl_if_empty:cF{g__chsmscthesis_cover-image_tl}{
 			\node[
 				anchor=north,
-				yshift=\headerheight
+				yshift=\g__chsmscthesis_grid_header_height
 			] at (current~page.center){
 				\tl_use:c{g__chsmscthesis_cover-image_tl}
 			};
@@ -248,8 +248,8 @@
 	\begin{tikzpicture}[remember~picture,overlay]
 		\node[anchor=north~west,xshift=2cm] at (current~page.north~west){
 			\bool_if:NTF#1
-				{\chalmersgulineheader{}}
-				{\chalmerslineheader{}}
+				{\__chsmscthesis_gu_header_line:}
+				{\__chsmscthesis_chalmers_header_line:}
 		};
 		\tl_if_empty:cTF{g__chsmscthesis_cover-image_tl}{
 			\node[anchor=north~west,xshift=2cm,yshift=-10.5cm](cover~image) at (current~page.north~west) {};

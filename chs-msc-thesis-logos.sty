@@ -1,4 +1,4 @@
-\RequirePackage{expl3,xparse}
+\RequirePackage{expl3}
 \ProvidesExplPackage{chs-msc-thesis-logos}{2014/01/17}{r2}
 	{Chalmers University of Technology thesis logos (unofficial, trademarked)}
 
@@ -7,14 +7,14 @@
 
 %% Define colors and lengths
 \definecolor{chs_grey}{RGB}{204,204,204}
-\newlength{\headerheight}
-\newlength{\headeroffset}
-\setlength{\headerheight}{0.215\paperheight}
-\setlength{\headeroffset}{0.125\headerheight}
+\newlength{\g__chsmscthesis_grid_header_height}
+\newlength{\g__chsmscthesis_grid_header_offset}
+\setlength{\g__chsmscthesis_grid_header_height}{0.215\paperheight}
+\setlength{\g__chsmscthesis_grid_header_offset}{0.125\g__chsmscthesis_grid_header_height}
 
 
 %% Complete Chalmers header (line)
-\DeclareDocumentCommand\chalmersgulineheader{}{
+\cs_new:Npn\__chsmscthesis_gu_header_line:{
 	\begin{tikzpicture}
 		\node at (0cm,4cm) {}; % dummy
 		\node[anchor=south~west] at (0cm,1cm) {
@@ -25,7 +25,7 @@
 }
 
 %% Complete Chalmers header (line)
-\DeclareDocumentCommand\chalmerslineheader{}{
+\cs_new:Npn\__chsmscthesis_chalmers_header_line:{
 	\begin{tikzpicture}
 		\node at (0cm,4cm) {}; % dummy
 		\node[anchor=south~west] at (0cm,.5cm) {
@@ -36,16 +36,16 @@
 }
 
 %% Chalmers+gu header (grid)
-\DeclareDocumentCommand\chalmersgugridheader{}{
+\cs_new:Npn\__chsmscthesis_gu_header_grid:{
 	% Header
 	\begin{tikzpicture}[remember~picture,overlay]
 		% Grid background
-		\headergrid
+		\__chsmscthesis_header_grid:
 		% Logos
 		\node[
 			anchor=west,
 			xshift=0.1\paperwidth,
-			yshift=0.55\headerheight,
+			yshift=0.55\g__chsmscthesis_grid_header_height,
 			inner~sep=0
 		]{\includegraphics[width=0.8\paperwidth]{chs-msc-gu-logo}};
 	\end{tikzpicture}
@@ -63,41 +63,41 @@
 }
 
 %% Complete Chalmers header (grid)
-\DeclareDocumentCommand\chalmersgridheader{}{
+\cs_new:Npn\__chsmscthesis_chalmers_header_grid:{
 	\begin{tikzpicture}[remember~picture,overlay]
 		% Grid background
-		\headergrid
+		\__chsmscthesis_header_grid:
 		% Chalmers text logo
 		\node[
 			anchor=west,
 			xshift=0.1\paperwidth,
-			yshift=0.511\headerheight
-		]{\chalmerslogo{0.63\paperwidth}};
+			yshift=0.511\g__chsmscthesis_grid_header_height
+		]{\__chsmscthesis_chalmers_logo:n{0.63\paperwidth}};
 		% Avancez logo
 		\node[
 			anchor=west,
 			xshift=0.745\paperwidth,
-			yshift=0.516\headerheight
+			yshift=0.516\g__chsmscthesis_grid_header_height
 		]{\includegraphics[width=0.171\paperwidth]{chs-msc-avancez-logo}};
 	\end{tikzpicture}
 }
 
 %% Grid used in headers
-\DeclareDocumentCommand\headergrid{}{
+\cs_new:Npn\__chsmscthesis_header_grid:{
 	\begin{scope}[chs_grey]
 		\clip[draw] 
-			(0,\headerheight) -- +(\paperwidth,0) --
+			(0,\g__chsmscthesis_grid_header_height) -- +(\paperwidth,0) --
 			(\paperwidth,0) -- (0.75\paperwidth,0) ..
 			controls
-			(0.725\paperwidth,0) and (0.725\paperwidth,\headeroffset) ..
-			(0.70\paperwidth,\headeroffset) -- (0,\headeroffset) -- cycle;
+			(0.725\paperwidth,0) and (0.725\paperwidth,\g__chsmscthesis_grid_header_offset) ..
+			(0.70\paperwidth,\g__chsmscthesis_grid_header_offset) -- (0,\g__chsmscthesis_grid_header_offset) -- cycle;
 		\draw[step=5mm,chs_grey] (0,0) grid (\paperwidth,0.25\paperheight);
 	\end{scope}
 }
 
 %% CHALMERS logo. Note that tt is trademarked!
 % tikz code courtesy of Micket/chalmers on Github
-\DeclareDocumentCommand\chalmerslogo{m}{
+\cs_new:Npn\__chsmscthesis_chalmers_logo:n#1{
 	\resizebox{#1}{!}{
 		% This is 11.994 in width, 1.341 in height
 		\begin{tikzpicture}[fill=black]
