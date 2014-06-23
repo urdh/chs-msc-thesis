@@ -4,11 +4,11 @@ This is an unofficial package that defines macros for the layout of the preamble
 
 Although master's theses are to be written in english, the class supports `babel` (or `polyglossia`) and provides english and swedish translations of the preamble. The package should work with any document class and font stack (it has been tested with `book`, `tufte-book` and `memoir`), as well as with other packages, but it is tailored for the `scrbook` KOMA-script document class along with Minion Pro and Cronos Pro fonts.
 
-The actual package, consisting of the files `chs-msc-thesis.sty` and `chs-msc-thesis-logos.sty` (excepting the trademarked logo defined in the latter), is available under the MIT license (see `LICENSE`). The sample file `chs-msc-thesis-test.tex` is in the public domain. The logotypes in the two PDF files `chs-msc-avancez-logo.pdf` and `chs-msc-gu-logo.pdf` is trademarked by their respective owners (Chalmers University of Technology and Gothenburg University), so take appropriate measures before using them. They have been reverse-engineered from material publically available from Studentportalen at Chalmers (see links at the end of this document).
+The actual package, consisting of the files `chs-msc-thesis.sty` and `chs-msc-thesis-logos.sty` (excepting the trademarked logo defined in the latter), is available under the MIT license (see `LICENSE`). The sample file `chs-msc-thesis-test.tex` is in the public domain. The logotypes in the four PDF files `chs-msc-full-chalmers-logo.pdf`, `chs-msc-full-chalmers-gu-logo.pdf`, `chs-msc-avancez-logo.pdf` and `chs-msc-gu-logo.pdf` is trademarked by their respective owners (Chalmers University of Technology and Gothenburg University), so take appropriate measures before using them. They have been reverse-engineered from material publically available from Studentportalen at Chalmers (see links at the end of this document).
 
 ## Usage
 
-Install the package by putting the `chs-msc-avancez-logo.pdf`, `chs-msc-gu-logo.pdf`, `chs-msc-thesis-logos.sty` and `chs-msc-thesis.sty` files either in your `TEXMFHOME` directory (recommended) or the same directory as your thesis.
+Install the package by putting the `chs-msc-full-chalmers-logo.pdf`, `chs-msc-full-chalmers-gu-logo.pdf`, `chs-msc-avancez-logo.pdf`, `chs-msc-gu-logo.pdf`, `chs-msc-thesis-logos.sty` and `chs-msc-thesis.sty` files either in your `TEXMFHOME` directory (recommended) or the same directory as your thesis.
 
 First, load the package (`chs-msc-thesis`).
 Then, issue the `\SetupMetadata` macro:
@@ -52,6 +52,8 @@ Then, issue the `\makefrontmatter` macro, with the optional argument accepting t
 \end{document}
 ```
 
+Additionally, the `\maketitle` macro accepts a `style` key-value option. At the moment, there are two styles: `grid` which mimics an older cover page template, and `line` which mimics the templates issued by Chalmers on 2014-06-04. The default is `grid`, in order to preserve compatibility with older documents.
+
 ## Options
 
 The package provides a few options to control the setup of style elements, which may not be desirable is the package is only used to generate the title pages. There are five boolean key-value options, all initially set to `true`, and one regular option:
@@ -70,3 +72,4 @@ When using the package with `tufte-book`, the `nothing` option is automatically 
 * The example file `chs-msc-thesis-test.tex`
 * [Micket/chalmers](https://github.com/Micket/chalmers), a seemingly less unofficial document class for theses at Chalmers
 * The [Master's thesis guidelines at Studentportalen](https://student.portal.chalmers.se/en/chalmersstudies/masters-thesis/Pages/design-and-publish-masters-thesis.aspx)
+* Sources for the `chs-msc-full-*-logo.pdf` files: [Chalmers](http://www.chalmers.se/sv/om-chalmers/profil-och-identitet/sidor/logotyp.aspx) and [Göteborgs Universitet](http://bildbank.gu.se/logotyperochmallar/).

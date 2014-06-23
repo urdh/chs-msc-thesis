@@ -146,7 +146,8 @@
 	\cs_gset:Npn\insubjectname{in}
 	\cs_gset:Npn\andname{and}
 	\cs_gset:Npn\chalmersname{Chalmers~University~of~Technology}
-	\cs_gset:Npn\gothenburgname{Göteborg,~Sweden}
+	\cs_gset:Npn\guname{Göteborgs~Universitet}
+	\cs_gset:Npn\gothenburgname{Gothenburg,~Sweden}
 	\cs_gset:Npn\reportnoname{REPORT~NO.}
 	\cs_gset:Npn\techreportnoname{Technical~report~no}
 	\cs_gset:Npn\chsaddrname{SE--412\,96~Göteborg\\Sweden}
@@ -161,6 +162,7 @@
 	\cs_gset:Npn\insubjectname{inom}
 	\cs_gset:Npn\andname{och}
 	\cs_gset:Npn\chalmersname{Chalmers~Tekniska~Högskola}
+	\cs_gset:Npn\guname{University~of~Gothenburg}
 	\cs_gset:Npn\gothenburgname{Göteborg}
 	\cs_gset:Npn\reportnoname{RAPPORT~NR.}
 	\cs_gset:Npn\techreportnoname{Teknisk~rapport~nr}
@@ -173,13 +175,47 @@
 }
 
 %% Cover page macros
+\cs_new:Npn\__chsmscthesis_coverpage_title_block:{
+	{
+		\__maybe_usekomafont:n{title}
+		\Huge
+		\tl_use:N\g__chsmscthesis_title_tl
+	}\\[.5\baselineskip]
+	\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
+		{
+			\__maybe_usekomafont:n{subtitle}
+			\LARGE
+			\tl_use:N\g__chsmscthesis_subtitle_tl
+		}\\[\baselineskip]
+	}
+	{
+		\__maybe_usekomafont:n{subject}
+		\Large
+		\emph{\mscthesisname{}~\insubjectname{}~\tl_use:N\g__chsmscthesis_subject_tl}
+	}\\[1.6\baselineskip]
+	{
+		\huge
+		\clist_use:Nnnn\g__chsmscthesis_author_clist{~\andname{}~}{\\}{\\}
+	}\\[1.6\baselineskip]
+}
+\cs_new:Npn\__chsmscthesis_coverpage_department_block:NN#1#2{
+	\tl_use:N\g__chsmscthesis_department_tl\\
+	\textsc{\chalmersname}\\
+	\bool_if:NT#1{\textsc{\guname}\\}
+	\gothenburgname{}~\tl_use:N\g__chsmscthesis_year_tl\\
+	\bool_if:NT#2{
+		\tl_if_empty:NF\g__chsmscthesis_series_tl{
+			\mscthesisname{}~\tl_use:N\g__chsmscthesis_series_tl\\
+		}
+	}
+}
 \cs_new:Npn\__chsmscthesis_coverpage_grid_style:N#1{
 	\begin{tikzpicture}[remember~picture,overlay]
- 		\node[yshift=-\headerheight] at (current~page.north~west){
- 			\bool_if:NTF#1
- 				{\chalmersguheader{}}
- 				{\chalmersheader{}}
- 		};
+		\node[yshift=-\headerheight] at (current~page.north~west){
+			\bool_if:NTF#1
+				{\chalmersgugridheader{}}
+				{\chalmersgridheader{}}
+		};
 		\tl_if_empty:cF{g__chsmscthesis_cover-image_tl}{
 			\node[
 				anchor=north,
@@ -197,36 +233,48 @@
 			\begin{minipage}{\textwidth}
 			\begin{FlushLeft}
 				\noindent
+				\__chsmscthesis_coverpage_title_block:
 				{
-					\__maybe_usekomafont:n{title}
-					\Huge
-					\tl_use:N\g__chsmscthesis_title_tl
-				}\\[.5\baselineskip]
-				\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{
-					{
-						\__maybe_usekomafont:n{subtitle}
-						\LARGE
-						\tl_use:N\g__chsmscthesis_subtitle_tl
-					}\\[\baselineskip]
+					\Large
+					\__chsmscthesis_coverpage_department_block:NN#1\c_true_bool
 				}
-				{
-					\__maybe_usekomafont:n{subject}
-					\Large
-					\emph{\mscthesisname{}~\insubjectname{}~\tl_use:N\g__chsmscthesis_subject_tl}
-				}\\[1.6\baselineskip]
-				{
-					\huge
-					\clist_use:Nnnn\g__chsmscthesis_author_clist{~\andname{}~}{\\}{\\}
-				}\\[1.6\baselineskip]
-				{
-					\Large
-					\tl_use:N\g__chsmscthesis_department_tl\\
-				 	\textsc{\chalmersname}\\
-			     	\gothenburgname{}~\tl_use:N\g__chsmscthesis_year_tl\\
-			     	\tl_if_empty:NF\g__chsmscthesis_series_tl{
-			     		\mscthesisname{}~\tl_use:N\g__chsmscthesis_series_tl\\
-			     	}
-			     }
+			\end{FlushLeft}
+			\end{minipage}
+		};
+	\end{tikzpicture}
+	\null
+}
+\cs_new:Npn\__chsmscthesis_coverpage_line_style:N#1{
+	\begin{tikzpicture}[remember~picture,overlay]
+		\node[anchor=north~west,xshift=2cm] at (current~page.north~west){
+			\bool_if:NTF#1
+				{\chalmersgulineheader{}}
+				{\chalmerslineheader{}}
+		};
+		\tl_if_empty:cTF{g__chsmscthesis_cover-image_tl}{
+			\node[anchor=north~west,xshift=2cm,yshift=-10.5cm](cover~image) at (current~page.north~west) {};
+		}{
+			\node[anchor=north~west,xshift=2cm,yshift=-5.5cm](cover~image) at (current~page.north~west){
+				\tl_use:c{g__chsmscthesis_cover-image_tl}
+			};
+		}
+		\node[anchor=north~west,yshift=-1cm] at (cover~image.south~west){
+			\begin{minipage}{\textwidth}
+			\begin{FlushLeft}
+				\noindent
+				\__chsmscthesis_coverpage_title_block:
+			\end{FlushLeft}
+			\end{minipage}
+		};
+		\node[anchor=south~west,xshift=2cm,yshift=1cm,align=left] (department) at (current~page.south~west){
+			\begin{tikzpicture}
+				\draw[line~width=1pt] (0cm,0cm) -- (18.6cm,0cm);
+			\end{tikzpicture}
+			\\[.25cm]
+			\begin{minipage}{\textwidth}
+			\begin{FlushLeft}
+				\noindent
+				\__chsmscthesis_coverpage_department_block:NN#1\c_false_bool
 			\end{FlushLeft}
 			\end{minipage}
 		};
@@ -238,7 +286,7 @@
 	gu-logo .initial:n = {false},
 	gu-logo .default:n = {true},
 	style   .choice_code:n = {\cs_set_eq:Nc\__chsmscthesis_coverpage:N{__chsmscthesis_coverpage_\tl_use:N\l_keys_choice_tl _style:N}},
-	style   .generate_choices:n = {grid},
+	style   .generate_choices:n = {grid, line},
 	style   .initial:n = {grid},
 	style   .value_required:
 }

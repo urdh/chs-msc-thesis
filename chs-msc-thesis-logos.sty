@@ -12,21 +12,31 @@
 \setlength{\headerheight}{0.215\paperheight}
 \setlength{\headeroffset}{0.125\headerheight}
 
-%% Grid used in headers
-\DeclareDocumentCommand\headergrid{}{
-	\begin{scope}[chs_grey]
-		\clip[draw] 
-			(0,\headerheight) -- +(\paperwidth,0) --
-			(\paperwidth,0) -- (0.75\paperwidth,0) ..
-			controls
-			(0.725\paperwidth,0) and (0.725\paperwidth,\headeroffset) ..
-			(0.70\paperwidth,\headeroffset) -- (0,\headeroffset) -- cycle;
-		\draw[step=5mm,chs_grey] (0,0) grid (\paperwidth,0.25\paperheight);
-	\end{scope}
+
+%% Complete Chalmers header (line)
+\DeclareDocumentCommand\chalmersgulineheader{}{
+	\begin{tikzpicture}
+		\node at (0cm,4cm) {}; % dummy
+		\node[anchor=south~west] at (0cm,1cm) {
+			\includegraphics[trim=2.5mm~0~0~0,width=17.16cm]{chs-msc-full-chalmers-gu-logo}
+		};
+		\draw[line~width=1pt] (0cm,0cm) -- (18.6cm,0cm);
+	\end{tikzpicture}
 }
 
-%% Chalmers+gu header
-\DeclareDocumentCommand\chalmersguheader{}{
+%% Complete Chalmers header (line)
+\DeclareDocumentCommand\chalmerslineheader{}{
+	\begin{tikzpicture}
+		\node at (0cm,4cm) {}; % dummy
+		\node[anchor=south~west] at (0cm,.5cm) {
+			\includegraphics[trim=3mm~0~0~0,height=2.5cm]{chs-msc-full-chalmers-logo}
+		};
+		\draw[line~width=1pt] (0cm,0cm) -- (18.6cm,0cm);
+	\end{tikzpicture}
+}
+
+%% Chalmers+gu header (grid)
+\DeclareDocumentCommand\chalmersgugridheader{}{
 	% Header
 	\begin{tikzpicture}[remember~picture,overlay]
 		% Grid background
@@ -39,7 +49,7 @@
 			inner~sep=0
 		]{\includegraphics[width=0.8\paperwidth]{chs-msc-gu-logo}};
 	\end{tikzpicture}
-	% Avances logo in bottom right
+	% Avancez logo in bottom right
 	\begin{tikzpicture}[remember~picture,overlay]
 		\node[
 			anchor=south~east,
@@ -52,8 +62,8 @@
 	\end{tikzpicture}
 }
 
-%% Complete Chalmers header
-\DeclareDocumentCommand\chalmersheader{}{
+%% Complete Chalmers header (grid)
+\DeclareDocumentCommand\chalmersgridheader{}{
 	\begin{tikzpicture}[remember~picture,overlay]
 		% Grid background
 		\headergrid
@@ -70,6 +80,19 @@
 			yshift=0.516\headerheight
 		]{\includegraphics[width=0.171\paperwidth]{chs-msc-avancez-logo}};
 	\end{tikzpicture}
+}
+
+%% Grid used in headers
+\DeclareDocumentCommand\headergrid{}{
+	\begin{scope}[chs_grey]
+		\clip[draw] 
+			(0,\headerheight) -- +(\paperwidth,0) --
+			(\paperwidth,0) -- (0.75\paperwidth,0) ..
+			controls
+			(0.725\paperwidth,0) and (0.725\paperwidth,\headeroffset) ..
+			(0.70\paperwidth,\headeroffset) -- (0,\headeroffset) -- cycle;
+		\draw[step=5mm,chs_grey] (0,0) grid (\paperwidth,0.25\paperheight);
+	\end{scope}
 }
 
 %% CHALMERS logo. Note that tt is trademarked!
