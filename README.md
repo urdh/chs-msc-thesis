@@ -28,6 +28,7 @@ Then, issue the `\SetupMetadata` macro:
 	publisher = {Optional publisher},
 	series = {Optional series number},
 	issn = {0000--0000},
+	examiner = {Examiner name}, % required by CSE dept.
 	% Supply either both or none of these
 	cover-caption = {Optional cover caption},
 	cover-image = {\includegraphics{...}}
@@ -43,7 +44,7 @@ Then, issue the `\makefrontmatter` macro, with the optional argument accepting t
 
 	\cleardoublepage
 	\tableofcontents
-	
+
 	\mainmatter
 	...
 

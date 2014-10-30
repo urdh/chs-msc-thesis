@@ -81,6 +81,7 @@
 	cover-caption .tl_gset:c = {g__chsmscthesis_cover-caption_tl},
 	keywords   .clist_gset:N = \g__chsmscthesis_keywords_clist,
 	issn       .tl_gset:N = \g__chsmscthesis_issn_tl,
+	examiner   .tl_gset:N = \g__chsmscthesis_examiner_tl,
 }
 \DeclareDocumentCommand\SetupMetadata{+m}{
 	\keys_set:nn{chs-msc-thesis / local}{#1}
@@ -136,7 +137,7 @@
 }
 \cs_new:Npn\__chsmscthesis_warn_optional_fields:{
 	\clist_map_function:nN
-		{publisher,series,cover-image,cover-caption,issn}
+		{publisher,series,cover-image,cover-caption,issn,examiner}
 		\__chsmscthesis_warn_optional_field:n
 }
 
@@ -156,6 +157,7 @@
 		\cs_gset:Npn\abstractname{Abstract}
 	}
 	\cs_gset:Npn\keywordsname{Keywords}
+	\cs_gset:Npn\examinername{Examiner}
 }
 \cs_if_exist_use:NTF\addto{\captionsswedish}{\use_none:n}{
 	\cs_gset:Npn\mscthesisname{Examensarbete}
@@ -172,6 +174,7 @@
 		\cs_gset:Npn\abstractname{Sammanfattning}
 	}
 	\cs_gset:Npn\keywordsname{Nyckelord}
+	\cs_gset:Npn\examinername{Examinator}
 }
 
 %% Cover page macros
@@ -364,13 +367,21 @@
 			 	},~
 			 	\tl_use:N\g__chsmscthesis_year_tl.
 			}\\[\baselineskip]
+			\tl_if_empty:NF\g__chsmscthesis_examiner_tl{
+				\examinername{}:~
+				\tl_use:N\g__chsmscthesis_examiner_tl
+				\\[\baselineskip]
+			}
 			\tl_if_empty:NF\g__chsmscthesis_series_tl{
 				\techreportnoname{}~
-				\tl_use:N\g__chsmscthesis_series_tl\\
+				\tl_use:N\g__chsmscthesis_series_tl
+				\tl_if_empty:NTF\g__chsmscthesis_issn_tl
+					{\\[\baselineskip]}{\\}
 			}
 			\tl_if_empty:NF\g__chsmscthesis_issn_tl{
 				\__maybe_textssc:n{issn}:~
-				\tl_use:N\g__chsmscthesis_issn_tl\\
+				\tl_use:N\g__chsmscthesis_issn_tl
+				\\[\baselineskip]
 			}
 			\tl_use:N\g__chsmscthesis_department_tl\\
 			\chalmersname\\
