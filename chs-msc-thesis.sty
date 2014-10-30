@@ -45,6 +45,7 @@
 \msg_new:nnn{chs-msc-thesis}{incorrect-usage}{Incorrect~usage~of~`\token_to_str:N#1'.}
 \msg_new:nnnn{chs-msc-thesis}{deprecated-construct}{The~use~of~`\token_to_str:N#1'~is~deprecated!}
 	{I~will~try~to~recover~from~this~by~#2.}
+\msg_new:nnnn{chs-msc-thesis}{missing-translation}{The~`#1'~string~has~no~#2~translation!}{#3}
 
 %% Useful things
 \cs_new:Npn\__maybe_usekomafont:n#1{
@@ -158,6 +159,24 @@
 	}
 	\cs_gset:Npn\keywordsname{Keywords}
 	\cs_gset:Npn\examinername{Examiner}
+	\cs_gset:Npn\legaltextname{
+		The~Author~grants~to~Chalmers~University~of~Technology~and~
+		University~of~Gothenburg~~the~non-exclusive~right~to~publish~
+		the~Work~electronically~and~in~a~non-commercial~purpose~make~
+		it~accessible~on~the~Internet.~The~Author~warrants~that~he/she~
+		is~the~author~to~the~Work,~and~warrants~that~the~Work~does~not~
+		contain~text,~pictures~or~other~material~that~violates~
+		copyright~law.
+		\par
+		The~Author~shall,~when~transferring~the~rights~of~the~Work~to~a~
+		third~party~(for~example~a~publisher~or~a~company),~acknowledge~
+		the~third~party~about~this~agreement.~If~the~Author~has~signed~
+		a~copyright~agreement~with~a~third~party~regarding~the~Work,~
+		the~Author~warrants~hereby~that~he/she~has~obtained~any~
+		necessary~permission~from~this~third~party~to~let~Chalmers~
+		University~of~Technology~and~University~of~Gothenburg~store~
+		the~Work~electronically~and~make~it~accessible~on~the~Internet.
+	}
 }
 \cs_if_exist_use:NTF\addto{\captionsswedish}{\use_none:n}{
 	\cs_gset:Npn\mscthesisname{Examensarbete}
@@ -175,6 +194,10 @@
 	}
 	\cs_gset:Npn\keywordsname{Nyckelord}
 	\cs_gset:Npn\examinername{Examinator}
+	\cs_gset:Npn\legaltextname{
+		\msg_error:nnnnn{chs-msc-thesis}{missing-translation}{legal text}{swedish}
+			{The~`legal-text'~option~is~only~available~for~theses~written~in~english.}
+	}
 }
 
 %% Cover page macros
@@ -288,6 +311,9 @@
 	gu-logo .bool_gset:N = \g__chsmscthesis_gu_logo_bool,
 	gu-logo .initial:n = {false},
 	gu-logo .default:n = {true},
+	legal-text .bool_gset:N = \g__chsmscthesis_legaltext_bool,
+	legal-text .initial:n = {false},
+	legal-text .default:n = {true},
 	style   .choice_code:n = {\cs_set_eq:Nc\__chsmscthesis_coverpage:N{__chsmscthesis_coverpage_\tl_use:N\l_keys_choice_tl _style:N}},
 	style   .generate_choices:n = {grid, line},
 	style   .initial:n = {grid},
@@ -350,6 +376,10 @@
 	\null
 	\vspace{4cm}
 	\begin{FlushLeft}
+		\bool_if:NT\g__chsmscthesis_legaltext_bool{
+			\legaltextname
+			\\[2\bigskipamount]
+		}
 		\begingroup
 			\tl_use:N\g__chsmscthesis_title_tl\\
 			\tl_if_empty:NF\g__chsmscthesis_subtitle_tl{

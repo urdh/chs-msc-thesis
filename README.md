@@ -55,6 +55,8 @@ Then, issue the `\makefrontmatter` macro, with the optional argument accepting t
 
 Additionally, the `\maketitle` macro accepts a `style` key-value option. At the moment, there are two styles: `grid` which mimics an older cover page template, and `line` which mimics the templates issued by Chalmers on 2014-06-04. The default is `grid`, in order to preserve compatibility with older documents.
 
+Finally, the `legal-text` option may be supplied to force the inclusion of a legal waiver on the colophon which is required by some departments.
+
 ## Options
 
 The package provides a few options to control the setup of style elements, which may not be desirable is the package is only used to generate the title pages. There are five boolean key-value options, all initially set to `true`, and one regular option:
